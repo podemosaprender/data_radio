@@ -37,12 +37,12 @@ function cmp_audio(my) { //U: un componente para reproducir audio
 	}
 }
 
-RADIO_URL="https://www.podemosaprender.org/data_radio/programas.html"
+RADIO_URL="https://www.podemosaprender.org/data_radio/";
 RadioIdx= null; //DFLT
 function radioFecth(wantsReload) {
 	if (RadioIdx && !wantsReload) { return new Promise(cb => cb(RadioIdx)) }
 	//A: si ya lo tenia, lo devolvi, sino lo busco
-	return fetch(RADIO_URL+'?x='+Date.now())
+	return fetch(RADIO_URL+'programas.html?x='+Date.now())
 		.then(r => r.text())
 		.then(t => { 
 			RadioIdx= {}; 
