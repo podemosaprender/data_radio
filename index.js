@@ -126,7 +126,7 @@ function scr_radio(my) { //U: escuchar la radio, ver programas
 	my.render= function (props, state) { 
 		var eProgramas= 'Cargando programas ...'; //DFLT: lista de programas
 		if (indexLoaded) {
-			eProgramas= Object.keys(RadioIdx).map( k => eAct(k,fAppGoTo('/radio/'+k),{style: {display: 'block', margin: '5px'}}) )
+			eProgramas= Object.keys(RadioIdx).sort().map( k => eAct(k,fAppGoTo('/radio/'+k),{style: {display: 'block', margin: '5px'}}) )
 		}
 
 		return eGroup([
