@@ -60,6 +60,20 @@ function radioFecth(wantsReload) {
 		});
 }
 
+function pathATitulo(k) { //U: separa ej "20200130_acordateDeMi" en fecha y titulo con espacios
+  var partes= k.split('_');
+	var titulo= 'Sin título'; //DFLT
+	if (partes.length>1) { //A: si habia texto para el titulo
+  	var enCamel= partes[1][0].toUpperCase()+partes[1].slice(1); //A: la primera en mayuscula, el resto como este
+  	titulo= enCamel
+			.replace(/([A-Z]*)/g,function (ignore,mayusculas) { return mayusculas.split('').join(' '); }) //A: separa mayusculas seguidas, meteles espacio en el medio
+			.replace(/([a-z])([A-Z])/g,function (ignore,ult,pri) { return ult + " "+pri}); //A: cada vez que encuentro minuscula seguida de mayuscula, separo y pongo espacio
+	}
+
+	var fecha= partes[0].replace(/(\d\d\d\d)(\d\d)(\d\d)/,"$3/$2/$1");
+  return {titulo: titulo, fecha: fecha};
+}
+
 function scr_radio_$programa(my) { //U: escuchar la radio, un programa, radio/miprograma
 	var wantsPlay= false;
 	var audios= null;
@@ -96,23 +110,69 @@ function scr_radio_$programa(my) { //U: escuchar la radio, un programa, radio/mi
 		audios= RadioIdx && RadioIdx[programa] && RadioIdx[programa].audios
 		console.log("Radio programa="+programa+" audios="+audios);
 
-		return h('div',{},
+		var contenido= 'Cargando programa '+programa;
+
+		if (indexLoaded) { //A: si ya cargamos la lista de audios
+			if (audioDone) { //A: se termino el ultimo
+				contenido= eAct(volverAEscuchar,'Volver a escuchar'); 
+			}
+			else { //A: quedan para escuchar
+				var titulo= "(" + audioIdx + "/" + audios.length+") "+audios[audioIdx];
+
+				contenido= eGroup([
+					h('h4',{},titulo),
+
+					h(Cmp.audio,{
+						src: audios[audioIdx], 
+						onEnded: audioOnEnded, 
+						onLoadedmetadata: audioOnLoadedMetadata, 
+						autoplay: wantsPlay
+					}),
+
+					eGroup([ //A: en un div para que quede en una linea saparada
+						eAct(audioOnEnded,'Próximo')
+					])
+				]);
+			}
+		}
+
+		return eGroup([
 			h('h1',{},'Radio PodemosAprender'),
 			h('h2',{},programa),
-			indexLoaded 
-				? audioDone 
-					? eAct(volverAEscuchar,'Volver a escuchar') 
-					: eGroup([
-							h('h4',{},"(" + audioIdx + "/" + audios.length+") "+audios[audioIdx]),
-							h(Cmp.audio,{src: audios[audioIdx], onEnded: audioOnEnded, onLoadedmetadata: audioOnLoadedMetadata, autoplay: wantsPlay}),
-							h('div',{},
-								h(Button,{onClick: audioOnEnded},'Próximo') 
-							)
-						])
-				: 'Cargando programa '+programa,
+			contenido,
 			eAct(fAppGoTo('/radio'),'Volver a la lista')
-		);
+		]);
 	}
+}
+
+function eRadio_programa_boton(k) { //U: para la lista de programas, un boton para un programa
+	return eAct(
+		k,
+		fAppGoTo('/radio/'+k),
+		{
+			icon: 'play', 
+			labelPosition: 'right',
+			style: {display: 'block', margin: '5px'}
+		}); 
+}
+	
+function eRadio_programa_card(k) { //U: para la lista de programas, una tarjeta en vez de solo boton
+	//SEE: https://react.semantic-ui.com/views/card/#types-groups
+	var datos= pathATitulo(k);
+
+	return h(Cmp.Card,{},
+		h(Cmp.Card.Content, {},
+			h(Cmp.Image, {floated:'right',size:'mini',src:'/ui/imagenes/logo.png'}),
+			h(Cmp.Card.Header,{},
+				datos.titulo,
+				h('p',{style: {fontSize: '50%', color: 'gray'}}, '('+datos.fecha+')'),
+			),
+			h(Cmp.Card.Description,{},'Nos mandamos tremenda descripción. Somos unos genios!'),
+		),	
+		h(Cmp.Card.Content, {extra: true, style: {textAlign: 'center'}}, 
+			eAct('escuchar',{icon:'play'}, fAppGoTo('/radio/'+k))
+							)
+		);
 }
 
 function scr_radio(my) { //U: escuchar la radio, ver programas
@@ -126,7 +186,8 @@ function scr_radio(my) { //U: escuchar la radio, ver programas
 	my.render= function (props, state) { 
 		var eProgramas= 'Cargando programas ...'; //DFLT: lista de programas
 		if (indexLoaded) {
-			eProgramas= Object.keys(RadioIdx).sort().map( k => eAct(k,fAppGoTo('/radio/'+k),{style: {display: 'block', margin: '5px'}}) )
+			var elementos= Object.keys(RadioIdx).sort();
+			eProgramas= h(Cmp.Card.Group, {}, elementos.map( eRadio_programa_card ));
 		}
 
 		return eGroup([
