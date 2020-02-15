@@ -48,6 +48,7 @@ function radioFecth(wantsReload) {
 			RadioIdx= {}; 
 			console.log("El texto que traje es "+t);
 			t.match(/<p>[^<]*/g) //A: array con todas las entradas desde <p>hasta<
+			.sort()
 			.forEach( f => {
 				var parts= f.split("/"); parts.shift(); //A: tiro <p>.
 				if (parts[1].match(/.ogg/)) { return } //A: no quiero los audios de entrada y salida
