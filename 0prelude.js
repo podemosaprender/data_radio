@@ -146,7 +146,7 @@ var UiThemes= "cerulean chubby cosmo cyborg darkly flatly journal lumen paper re
 
 function UiSetTheme(nombre) { //U: activar este tema de ui (colores, tamaños, etc.)
   var st= document.getElementById("tema");
-  st.href='/node_modules/semantic-ui-forest-themes/semantic.'+nombre+'.min.css';
+  st.href='node_modules/semantic-ui-forest-themes/semantic.'+nombre+'.min.css';
 }
 
 COLOR= { } //U: para definir colores por nombre o funcion, ej. "FONDO" y poder cambiarlos
