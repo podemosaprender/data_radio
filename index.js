@@ -52,10 +52,14 @@ function radioFecth(wantsReload) {
 			.forEach( f => {
 				var parts= f.split("/"); parts.shift(); //A: tiro <p>.
 				if (parts[1].match(/.ogg/)) { return } //A: no quiero los audios de entrada y salida
-				var programa= RadioIdx[parts[1]] || {titulo: parts[1], audios: []};
+				var programa= RadioIdx[parts[1]] || {titulo: parts[1], audios: [RADIO_URL+'/audio/c_in.ogg']};
 				RadioIdx[parts[1]]= programa; //A: seguro lo guarde e inicialice
 				programa.audios.push(RADIO_URL+'/'+parts.join('/'));
 			});
+
+			Object.keys(RadioIdx).forEach(k => 
+				RadioIdx[k].audios.push(RADIO_URL+'/audio/c_out.ogg')
+			);
 			return RadioIdx;
 		});
 }
