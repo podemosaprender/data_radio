@@ -162,7 +162,7 @@ function eRadio_programa_card(k) { //U: para la lista de programas, una tarjeta 
 
 	return h(Cmp.Card,{},
 		h(Cmp.Card.Content, {},
-			h(Cmp.Image, {floated:'right',size:'mini',src:'/ui/imagenes/logo.png'}),
+			h(Cmp.Image, {floated:'right',size:'mini',src:'imagenes/logo.png'}),
 			h(Cmp.Card.Header,{},
 				datos.titulo,
 				h('p',{style: {fontSize: '50%', color: 'gray'}}, '('+datos.fecha+')'),
